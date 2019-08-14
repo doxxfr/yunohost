@@ -421,7 +421,7 @@ def permission_update(operation_logger, app, permission, add_url=None, remove_ur
         return user_permission_list(app, permission)
 
     operation_logger.start()
-    if ldap.update('cn=%s,ou=permission' % permission_name, {'cn': permission_name, 'URL': url}):
+    if ldap.update('cn=%s,ou=permission' % permission_name, {'cn': [permission_name], 'URL': url}):
         if sync_perm:
             permission_sync_to_user()
         logger.debug(m18n.n('permission_updated', permission=permission, app=app))

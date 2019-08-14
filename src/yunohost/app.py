@@ -739,7 +739,6 @@ def app_install(operation_logger, app, label=None, args=None, no_remove_on_failu
     from yunohost.hook import hook_add, hook_remove, hook_exec, hook_callback
     from yunohost.log import OperationLogger
     from yunohost.permission import permission_add, permission_update, permission_remove, permission_sync_to_user
-    ldap = _get_ldap_interface()
 
     # Fetch or extract sources
     if not os.path.exists(INSTALL_TMP):
@@ -872,9 +871,10 @@ def app_install(operation_logger, app, label=None, args=None, no_remove_on_failu
         if os.path.exists(os.path.join(extracted_app_folder, file_to_copy)):
             os.system('cp -R %s/%s %s' % (extracted_app_folder, file_to_copy, app_setting_path))
 
-    # Create permission before the install (useful if the install script redefine the permission)
-    # Note that sync_perm is disabled to avoid triggering a whole bunch of code and messages
-    # can't be sure that we don't have one case when it's needed
+    # Create permission before the install (useful if the install script
+    # redefine the permission) Note that sync_perm is disabled to avoid
+    # triggering a whole bunch of code and messages can't be sure that we don't
+    # have one case when it's needed
     permission_add(app=app_instance_name, permission="main", sync_perm=False)
 
     # Execute the app install script
@@ -910,6 +910,7 @@ def app_install(operation_logger, app, label=None, args=None, no_remove_on_failu
                     args=[app_instance_name], env=env_dict_remove
                 )[0]
                 # Remove all permission in LDAP
+                ldap = _get_ldap_interface()
                 result = ldap.search(base='ou=permission,dc=yunohost,dc=org',
                                     filter='(&(objectclass=permissionYnh)(cn=*.%s))' % app_instance_name, attrs=['cn'])
                 permission_list = [p['cn'][0] for p in result]
