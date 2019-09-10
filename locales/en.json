@@ -407,8 +407,6 @@
     "no_ipv6_connectivity": "IPv6 connectivity is not available",
     "no_restore_script": "No restore script found for the app '{app:s}'",
     "not_enough_disk_space": "Not enough free disk space on '{path:s}'",
-    "package_not_installed": "Package '{pkgname}' is not installed",
-    "package_unexpected_error": "An unexpected error occurred processing the package '{pkgname}'",
     "package_unknown": "Unknown package '{pkgname}'",
     "packages_upgrade_critical_later": "Critical packages ({packages:s}) will be upgraded later",
     "packages_upgrade_failed": "Unable to upgrade all of the packages",
