@@ -18,7 +18,7 @@ run apt-get update && apt-get install -q --yes \
     apt apt-transport-https apt-utils dirmngr \
     openssh-server iptables fail2ban bind9-dnsutils \
     openssl ca-certificates netcat-openbsd iproute2 \
-    nginx nginx-extras>=1.18 \
+    nginx nginx-extras \
     slapd ldap-utils sudo-ldap libnss-ldapd libpam-ldapd \
     dnsmasq  libnss-myhostname \
     postfix postfix-ldap postfix-policyd-spf-perl postfix-pcre \
@@ -33,7 +33,7 @@ run apt-get install -q --yes  \
     python3-psutil python3-requests python3-dnspython python3-openssl \
     python3-miniupnpc python3-dbus python3-jinja2 \
     python3-toml python3-packaging python3-publicsuffix2 \
-    python3-ldap python3-zeroconf>=0.36 python3-lexicon \
+    python3-ldap 'python3-zeroconf' python3-lexicon \
     python-is-python3
 # run pip install -r requirements.txt
 
@@ -112,9 +112,10 @@ add "submodules/moulinette/moulinette" "/usr/lib/python2.7/dist-packages/mouline
 # TODO: Autre image Docker
 # add "submodules/yunohost-admin/" "/usr/share/yunohost/admin"
 
+user root
+add ./bootstrap.sh "/bootstrap.sh"
+run "chmod u+x /bootstrap.sh"
 
-add bootstrap.sh "/bootstrap.sh"
-CMD chmod +x"/bootstrap.sh"
 #  yunohost:base
 
 FROM base AS doc
@@ -131,8 +132,8 @@ FROM base as dev
 COPY --from=doc doc/yunohost.8.gz /usr/share/man/man8/
 COPY --from=doc doc/bash_completion.d/* /etc/bash_completion.d/
 # yunohost:dev
-RUN useradd -q admin
-USER admin
 
-RUN bootstrap.sh
+RUN useradd --shell /bin/bash -G sudo,root admin
+USER admin
+WORKDIR /
 RUN yunohost tools postinstall -d ynh.localhost -p --ignore-dyndns --force-diskspace
