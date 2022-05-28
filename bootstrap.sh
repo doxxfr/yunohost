@@ -184,18 +184,18 @@ function step() {
 }
 
 function apt_get_wrapper() {
-    if [[ "$AUTOMODE" == "0" ]] ;
-    then
+    # if [[ "$AUTOMODE" == "0" ]] ;
+    # then
     #   debconf-apt-progress                             \
     #       --logfile $YUNOHOST_LOG                      \
     #       --                                           \
-          apt-get $*
-    else
+        #   apt-get $*
+    # else
         # Why we need pipefail : https://stackoverflow.com/a/6872163
-        set -o pipefail
-        apt-get $* 2>&1 | tee -a $YUNOHOST_LOG || return 1
-        set +o pipefail
-    fi
+    set -o pipefail
+    apt-get $* 2>&1 | tee -a $YUNOHOST_LOG || return 1
+    set +o pipefail
+    # fi
 }
 
 
