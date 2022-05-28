@@ -11,6 +11,7 @@ RUN set -x \
 
 # disabled:
 # resolvconf
+# unscd
 
 # TODO: sortir la stack ldap? la stack mail?
 run apt-get update && apt-get install -q --yes \
@@ -18,7 +19,7 @@ run apt-get update && apt-get install -q --yes \
     openssh-server iptables fail2ban bind9-dnsutils \
     openssl ca-certificates netcat-openbsd iproute2 \
     nginx nginx-extras>=1.18 \
-    slapd ldap-utils sudo-ldap libnss-ldapd unscd libpam-ldapd \
+    slapd ldap-utils sudo-ldap libnss-ldapd libpam-ldapd \
     dnsmasq  libnss-myhostname \
     postfix postfix-ldap postfix-policyd-spf-perl postfix-pcre \
     dovecot-core dovecot-ldap dovecot-lmtpd dovecot-managesieved dovecot-antispam \
@@ -58,7 +59,7 @@ run apt-get install -q --yes  \
 #  iptables (>= 1.8.8)
 
 
-COMMIT deps
+# deps
 # add "bin/yunohost" "/usr/bin/yunohost"
 # add "bin/yunohost-api" "/usr/bin/yunohost-api"
 
@@ -114,7 +115,7 @@ add "submodules/moulinette/moulinette" "/usr/lib/python2.7/dist-packages/mouline
 
 add bootstrap.sh "/bootstrap.sh"
 CMD chmod +x"/bootstrap.sh"
-COMMIT yunohost:base
+#  yunohost:base
 
 FROM base AS doc
 
@@ -124,9 +125,14 @@ add "share/actionsmap.yml" "/share/actionsmap.yml"
 copy doc/ /doc/
 run python3 /doc/generate_bash_completion.py
 run python3 /doc/generate_manpages.py --gzip --output doc/yunohost.8.gz
-COMMIT yunohost:doc
+# yunohost:doc
 
 FROM base as dev
 COPY --from=doc doc/yunohost.8.gz /usr/share/man/man8/
 COPY --from=doc doc/bash_completion.d/* /etc/bash_completion.d/
-COMMIT yunohost:dev
+# yunohost:dev
+RUN useradd -q admin
+USER admin
+
+RUN bootstrap.sh
+RUN yunohost tools postinstall -d ynh.localhost -p --ignore-dyndns --force-diskspace
