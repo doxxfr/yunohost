@@ -4,7 +4,7 @@
 import os
 import sys
 import argparse
-import yunohost
+from yunohost import cli
 
 
 def _parse_cli_args():
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     parser, opts, args = _parse_cli_args()
 
     # Execute the action
-    yunohost.cli(
+    cli(
         debug=opts.debug,
         quiet=opts.quiet,
         output_as=opts.output_as,
