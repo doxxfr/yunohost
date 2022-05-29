@@ -214,12 +214,12 @@ function use_git()
                 # debian
                 # create_sym_link "/ynh-dev/yunohost/debian/conf/pam/mkhomedir" "/usr/share/pam-configs/mkhomedir"
 
-                # lib
-                create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/ldap.lib.lua" "/usr/lib/metronome/modules/ldap.lib.lua"
-                create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/mod_auth_ldap2.lua" "/usr/lib/metronome/modules/mod_auth_ldap2.lua"
-                create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/mod_legacyauth.lua" "/usr/lib/metronome/modules/mod_legacyauth.lua"
-                create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/mod_storage_ldap.lua" "/usr/lib/metronome/modules/mod_storage_ldap.lua"
-                create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/vcard.lib.lua" "/usr/lib/metronome/modules/vcard.lib.lua"
+                # lib metronome => à extériosier remplacer par keycloak + openldap
+                # create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/ldap.lib.lua" "/usr/lib/metronome/modules/ldap.lib.lua"
+                # create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/mod_auth_ldap2.lua" "/usr/lib/metronome/modules/mod_auth_ldap2.lua"
+                # create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/mod_legacyauth.lua" "/usr/lib/metronome/modules/mod_legacyauth.lua"
+                # create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/mod_storage_ldap.lua" "/usr/lib/metronome/modules/mod_storage_ldap.lua"
+                # create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/vcard.lib.lua" "/usr/lib/metronome/modules/vcard.lib.lua"
 
                 # src
                 create_sym_link "/ynh-dev/yunohost/src/yunohost" "/usr/lib/moulinette/yunohost"
