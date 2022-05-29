@@ -67,13 +67,70 @@ run apt-get install -q --yes  \
 # add "data/bash-completion.d/yunohost" "/etc/bash_completion.d/yunohost"
 
 
-# FROM deps as debian
-# add debian/ /yunohost/DEBIAN
-# RUN chmod -R 755 /yunohost
-# WORKDIR /yunohost/
-# RUN dpkg-deb -b /yunohost
-# WORKDIR /
-# RUN dpkg -i /yunohost.deb
+FROM deps as debian
+add debian/ /yunohost/debian
+RUN chmod -R 755 /yunohost
+WORKDIR /yunohost/debian
+RUN make
+# .build-stage:
+#   stage: build
+#   image: "before-install"
+#   variables:
+#     YNH_SOURCE: "https://github.com/yunohost"
+#   before_script:
+#     - mkdir -p $YNH_BUILD_DIR
+#     - DEBIAN_FRONTEND=noninteractive apt update
+#   artifacts:
+#     paths:
+#       - $YNH_BUILD_DIR/*.deb
+
+# .build_script: &build_script
+#   - DEBIAN_FRONTEND=noninteractive apt --assume-yes -o Dpkg::Options::="--force-confold" install devscripts --no-install-recommends
+#   - cd $YNH_BUILD_DIR/$PACKAGE
+#   - VERSION=$(dpkg-parsechangelog -S Version 2>/dev/null)
+#   - VERSION_NIGHTLY="${VERSION}+$(date +%Y%m%d%H%M)"
+#   - dch --package "${PACKAGE}" --force-bad-version -v "${VERSION_NIGHTLY}" -D "unstable" --force-distribution "Daily build."
+#   - debuild --no-lintian -us -uc
+
+# ########################################
+# # BUILD DEB
+# ########################################
+
+# build-yunohost:
+#   extends: .build-stage
+#   variables:
+#     PACKAGE: "yunohost"
+#   script:
+#     - git ls-files | xargs tar -czf archive.tar.gz
+#     - mkdir -p $YNH_BUILD_DIR/$PACKAGE
+#     - cat archive.tar.gz | tar -xz -C $YNH_BUILD_DIR/$PACKAGE
+#     - rm archive.tar.gz
+#     - DEBIAN_FRONTEND=noninteractive apt --assume-yes -o Dpkg::Options::="--force-confold" build-dep $(pwd)/$YNH_BUILD_DIR/$PACKAGE
+#     - *build_script
+
+
+# build-ssowat:
+#   extends: .build-stage
+#   variables:
+#     PACKAGE: "ssowat"
+#   script:
+#     - DEBIAN_DEPENDS=$(cat debian/control | tr "," "\n" | grep -Po "ssowat \([>,=,<]+ .*\)" | grep -Po "[0-9\.]+")
+#     - git clone $YNH_SOURCE/$PACKAGE -b $CI_COMMIT_REF_NAME $YNH_BUILD_DIR/$PACKAGE --depth 1 || git clone $YNH_SOURCE/$PACKAGE -b $DEBIAN_DEPENDS $YNH_BUILD_DIR/$PACKAGE --depth 1 || git clone $YNH_SOURCE/$PACKAGE $YNH_BUILD_DIR/$PACKAGE --depth 1
+#     - DEBIAN_FRONTEND=noninteractive apt --assume-yes -o Dpkg::Options::="--force-confold" build-dep $(pwd)/$YNH_BUILD_DIR/$PACKAGE
+#     - *build_script
+
+# build-moulinette:
+#   extends: .build-stage
+#   variables:
+#     PACKAGE: "moulinette"
+#   script:
+#     - DEBIAN_DEPENDS=$(cat debian/control | tr "," "\n" | grep -Po "moulinette \([>,=,<]+ .*\)" | grep -Po "[0-9\.]+")
+#     - git clone $YNH_SOURCE/$PACKAGE -b $CI_COMMIT_REF_NAME $YNH_BUILD_DIR/$PACKAGE --depth 1 || git clone $YNH_SOURCE/$PACKAGE -b $DEBIAN_DEPENDS $YNH_BUILD_DIR/$PACKAGE --depth 1 || git clone $YNH_SOURCE/$PACKAGE $YNH_BUILD_DIR/$PACKAGE --depth 1
+#     - DEBIAN_FRONTEND=noninteractive apt --assume-yes -o Dpkg::Options::="--force-confold" build-dep $(pwd)/$YNH_BUILD_DIR/$PACKAGE
+#     - *build_script
+
+#RUN dpkg-deb -b /yunohost/debian /yunohost/yunohost.deb
+#RUN dpkg -i /yunohost.deb
 # RUN  python -m pip install /usr/lib/python3/dist-packages/yunohost
 
 
@@ -90,25 +147,9 @@ FROM deps AS base
 
 add conf/metronome/modules/* /usr/lib/metronome/modules/
 
-
-# TODO: image moulinette?
-RUN apt-get install  -q --yes \
-python3-yaml \
-python3-bottle \
-python3-gevent-websocket \
-python3-toml \
-python3-psutil \
-python3-tz \
-python3-prompt-toolkit \
-python3-pygments
-
-add "share/actionsmap.yml" "/usr/share/moulinette/actionsmap/yunohost.yml"
-# add "data/templates" "/usr/share/yunohost/templates"
-# add "data/other" "/usr/share/yunohost/yunohost-config/moulinette"
-
 # debian python3
 
-add "debian/conf/pam/mkhomedir" "/usr/share/pam-configs/mkhomedir"
+#add --from=debian "debian/conf/pam/mkhomedir" "/usr/share/pam-configs/mkhomedir"
 
 # lib
 add "conf/metronome/modules/ldap.lib.lua" "/usr/lib/metronome/modules/ldap.lib.lua"
@@ -130,6 +171,25 @@ add "locales" "/usr/lib/yunohost/yunohost/locales"
 add "submodules/ssowat" "/usr/share/ssowat"
 
 # TODO: Autre image Docker?
+
+
+
+# TODO: image moulinette?
+RUN apt-get install  -q --yes \
+python3-yaml \
+python3-bottle \
+python3-gevent-websocket \
+python3-toml \
+python3-psutil \
+python3-tz \
+python3-prompt-toolkit \
+python3-pygments
+
+add "share/actionsmap.yml" "/usr/share/moulinette/actionsmap/yunohost.yml"
+# add "data/templates" "/usr/share/yunohost/templates"
+# add "data/other" "/usr/share/yunohost/yunohost-config/moulinette"
+
+
 add "submodules/moulinette/locales" "/usr/share/moulinette/locales"
 # add "submodules/moulinette/moulinette" "/usr/lib/python2.7/dist-packages/moulinette"
 add "submodules/moulinette/moulinette" "/usr/lib/python3/dist-packages/moulinette"
