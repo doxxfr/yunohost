@@ -92,30 +92,23 @@ add conf/metronome/modules/* /usr/lib/metronome/modules/
 
 
 # TODO: image moulinette?
-add apt-get install  -q --yes \
+RUN apt-get install  -q --yes \
 python3-yaml \
-python3-bottle (>= 0.12) \
+python3-bottle \
 python3-gevent-websocket \
 python3-toml \
 python3-psutil \
 python3-tz \
 python3-prompt-toolkit \
 python3-pygments
-#!/usr/bin/make -f
 
-# ENV PYBUILD_NAME=moulinette
-
-# %:
-	# dh $@ --with python3 --buildsystem=pybuild
-
-
-# add "share/actionsmap/yunohost.yml" "/usr/share/moulinette/actionsmap/yunohost.yml"
+add "share/actionsmap.yml" "/usr/share/moulinette/actionsmap/yunohost.yml"
 # add "data/templates" "/usr/share/yunohost/templates"
 # add "data/other" "/usr/share/yunohost/yunohost-config/moulinette"
 
 # debian python3
 
-# add "debian/conf/pam/mkhomedir" "/usr/share/pam-configs/mkhomedir"
+add "debian/conf/pam/mkhomedir" "/usr/share/pam-configs/mkhomedir"
 
 # lib
 add "conf/metronome/modules/ldap.lib.lua" "/usr/lib/metronome/modules/ldap.lib.lua"
@@ -127,11 +120,7 @@ add "conf/metronome/modules/vcard.lib.lua" "/usr/lib/metronome/modules/vcard.lib
 # src
 add "src/" "/usr/lib/yunohost/yunohost/"
 add src/ /usr/lib/python3/dist-packages/yunohost/
-# ENV PYTHONPATH=$PYTHONPATH:/usr/lib/python3/dist-packages/
-# RUN echo $PYTHON_PATH
-# RUN python3 -m pip install .yunohost
 add "bin/yunohost" "/usr/bin/yunohost"
-# add "bin/yunohost" "/usr/lib/python3/yunohost.py"
 
 # locales
 add "locales" "/usr/lib/yunohost/yunohost/locales"

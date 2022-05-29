@@ -212,7 +212,7 @@ function use_git()
                 create_sym_link "/ynh-dev/yunohost/data/other" "/usr/share/yunohost/yunohost-config/moulinette"
 
                 # debian
-                create_sym_link "/ynh-dev/yunohost/debian/conf/pam/mkhomedir" "/usr/share/pam-configs/mkhomedir"
+                # create_sym_link "/ynh-dev/yunohost/debian/conf/pam/mkhomedir" "/usr/share/pam-configs/mkhomedir"
 
                 # lib
                 create_sym_link "/ynh-dev/yunohost/lib/metronome/modules/ldap.lib.lua" "/usr/lib/metronome/modules/ldap.lib.lua"
