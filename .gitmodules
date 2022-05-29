@@ -1,0 +1,6 @@
+[submodule "submodules/moulinette/"]
+	url = https://github.com/YunoHost/moulinette/
+[submodule "https://github.com/YunoHost/ssowat/"]
+	url = submodules/ssowat
+[submodule "https://github.com/YunoHost/yunohost-admin/"]
+	url = submodules/yunohost-admin

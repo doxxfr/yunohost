@@ -59,14 +59,25 @@ run apt-get install -q --yes  \
 #  iptables (>= 1.8.8)
 
 
-# deps
 # add "bin/yunohost" "/usr/bin/yunohost"
 # add "bin/yunohost-api" "/usr/bin/yunohost-api"
 
 # data
 # TODO:
 # add "data/bash-completion.d/yunohost" "/etc/bash_completion.d/yunohost"
-FROM deps AS base
+
+
+FROM deps as debian
+add debian/ /dpkg/DEBIAN
+RUN chmod -R 755 /dpkg
+WORKDIR /dpkg/
+RUN dpkg-deb -b /dpkg
+RUN dpkg -i /dpkg.deb
+# RUN  python -m pip install /usr/lib/python3/dist-packages/yunohost
+
+# add src/* /usr/lib/python3/dist-packages/yunohost/
+
+FROM debian AS base
 
 add bin/* /usr/bin/
 add share/* /usr/share/yunohost/
@@ -77,9 +88,18 @@ add locales/* /usr/share/yunohost/locales/
 
 
 add conf/metronome/modules/* /usr/lib/metronome/modules/
-add src/* /usr/lib/python3/dist-packages/yunohost/
+
 
 # TODO: image moulinette?
+
+#!/usr/bin/make -f
+
+# ENV PYBUILD_NAME=moulinette
+
+# %:
+	# dh $@ --with python3 --buildsystem=pybuild
+
+
 # add "share/actionsmap/yunohost.yml" "/usr/share/moulinette/actionsmap/yunohost.yml"
 # add "data/templates" "/usr/share/yunohost/templates"
 # add "data/other" "/usr/share/yunohost/yunohost-config/moulinette"
@@ -106,17 +126,12 @@ add "locales" "/usr/lib/moulinette/yunohost/locales"
 add "submodules/ssowat" "/usr/share/ssowat"
 
 # TODO: Autre image Docker?
-add "submodules/moulinette/locales" "/usr/share/moulinette/locale"
+add "submodules/moulinette/locales" "/usr/share/moulinette/locales"
 add "submodules/moulinette/moulinette" "/usr/lib/python2.7/dist-packages/moulinette"
 
 # TODO: Autre image Docker
 # add "submodules/yunohost-admin/" "/usr/share/yunohost/admin"
 
-user root
-add ./bootstrap.sh "/bootstrap.sh"
-run "chmod u+x /bootstrap.sh"
-
-#  yunohost:base
 
 FROM base AS doc
 
@@ -128,12 +143,22 @@ run python3 /doc/generate_bash_completion.py
 run python3 /doc/generate_manpages.py --gzip --output doc/yunohost.8.gz
 # yunohost:doc
 
-FROM base as dev
+FROM base as bootstrap
 COPY --from=doc doc/yunohost.8.gz /usr/share/man/man8/
 COPY --from=doc doc/bash_completion.d/* /etc/bash_completion.d/
+add ./bootstrap.sh "/bootstrap.sh"
+
+run bash /bootstrap.sh
+
+#  yunohost:base
+FROM bootstrap as dev
 # yunohost:dev
+
+WORKDIR /
+ENV YNH_ROOT_DOMAIN=ynh.localhost
+
+RUN  yunohost tools postinstall -d ynh.localhost -p --ignore-dyndns --force-diskspace
+# RUN bash yunohost tools postinstall -d ${YNH_ROOT_DOMAIN} -p --ignore-dyndns --force-diskspace
 
 RUN useradd --shell /bin/bash -G sudo,root admin
 USER admin
-WORKDIR /
-RUN yunohost tools postinstall -d ynh.localhost -p --ignore-dyndns --force-diskspace
