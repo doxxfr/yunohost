@@ -134,7 +134,8 @@ add "submodules/ssowat" "/usr/share/ssowat"
 
 # TODO: Autre image Docker?
 add "submodules/moulinette/locales" "/usr/share/moulinette/locales"
-add "submodules/moulinette/moulinette" "/usr/lib/python2.7/dist-packages/moulinette"
+# add "submodules/moulinette/moulinette" "/usr/lib/python2.7/dist-packages/moulinette"
+add "submodules/moulinette/moulinette" "/usr/lib/python3/dist-packages/moulinette"
 
 # TODO: Autre image Docker
 # add "submodules/yunohost-admin/" "/usr/share/yunohost/admin"
