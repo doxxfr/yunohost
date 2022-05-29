@@ -92,7 +92,15 @@ add conf/metronome/modules/* /usr/lib/metronome/modules/
 
 
 # TODO: image moulinette?
-
+add apt-get install  -q --yes \
+python3-yaml \
+python3-bottle (>= 0.12) \
+python3-gevent-websocket \
+python3-toml \
+python3-psutil \
+python3-tz \
+python3-prompt-toolkit \
+python3-pygments
 #!/usr/bin/make -f
 
 # ENV PYBUILD_NAME=moulinette
@@ -169,5 +177,5 @@ RUN /usr/bin/yunohost tools postinstall -d ynh.localhost -p --ignore-dyndns --fo
 
 # RUN bash yunohost tools postinstall -d ${YNH_ROOT_DOMAIN} -p --ignore-dyndns --force-diskspace
 
-# RUN useradd --shell /bin/bash -G sudo,root admin
+# RUN useradd --shell /bin/bash -G sudo \root admin
 # USER admin
